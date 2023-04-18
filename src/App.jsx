@@ -16,9 +16,6 @@ function App() {
           Learn React
         </a>
       </article>
-      <div>
-        {new Date().toLocaleString()}
-      </div>
     </div>
   );
 }
