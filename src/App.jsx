@@ -15,6 +15,10 @@ function App() {
         >
           Learn React
         </a>
+
+        <div>
+          {new Date().toLocaleString()}
+        </div>
       </article>
     </div>
   );
