@@ -10,7 +10,24 @@ function App(props) {
       username: username
     };
     alert(data.username);
+    fireAPI().then(function(value){
+      console.log(value);
+    });
+    
   };
+  let customer;
+  async function fireAPI() {
+   return await fetch('https://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search?q=永劫譚&targets=title&_context=nicocheck&_sort=lastCommentTime', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    // body: JSON.stringify({
+    //   q: '永劫譚',
+    //   targets: 'title'
+    // })
+  }).then(res => res.json());
+  }
   return (
     <div className="App" role="main">
       <article className="App-article">
@@ -30,6 +47,9 @@ function App(props) {
         </form>
         <div>
           {new Date().toLocaleString()}
+        </div>
+        <div>
+          {customer}
         </div>
       </article>
     </div>
