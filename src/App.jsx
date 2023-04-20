@@ -6,18 +6,29 @@ import React, {setState,useState} from 'react';
 function App(props) {
   const [username,setUsername] = useState('');
   const [list,setList] = useState('');
+  const [offset,setOffset] = useState(0);
   const handleSubmit = e =>{
     e.preventDefault();
-    const data = {
-      username: username
-    };
+    setOffset(0)
+    search(0);
+  };
+  /**
+  * 
+  * @param {*} pageMove when paging to right, should be +1. when left, -1.
+  * @returns 
+  */
+  function search(pageMove){
     
-    if (data.username === '') {
+    if (username === '') {
       alert('blank search is invalid!')
       return;
 
     }
-    fireAPI(data.username,0).then(function(value){
+    //setOffset(offset);
+    fireAPI(username,offset+pageMove).then(function(value){
+      // to synchronize, count it up after searching
+      
+      console.log({offset:offset});
       setList(value.data.map(item => (
         <div key={item.title}>
           <p>{item.title}</p>
@@ -25,12 +36,28 @@ function App(props) {
         </div>
       )))
     });
+  }
+
+//   function paging(right){
+// setOffset(offset +1);
+// handleSubmit();
+//   } 
+  const pagingRight = e =>{
+    e.preventDefault();
     
-  };
+    search(+1);
+    setOffset(offset+1);
+  }
+  const pagingLeft = e =>{
+    e.preventDefault();
+    
+    search(-1);
+    setOffset(offset-1);
+  }
   let customer;
-  async function fireAPI(keyword,offset) {
+  async function fireAPI(keyword,page) {
     let jsons = [];
-   return await fetch('https://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search?q='+keyword+'&targets=title&_context=nicocheck&_sort=lastCommentTime&fields=title,viewCounter&_limit=100&_offset='+offset, {
+   return await fetch('https://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search?q='+keyword+'&targets=title&_context=nicocheck&_sort=lastCommentTime&fields=title,viewCounter&_limit=100&_offset='+(page*100), {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
@@ -57,6 +84,8 @@ function App(props) {
         <div>
           {new Date().toLocaleString()}
         </div>
+          <input type="button" value="<" onClick={pagingLeft}/>
+          <input type="button" value=">" onClick={pagingRight}/>
         <div>
           {customer}
         </div>
@@ -64,6 +93,7 @@ function App(props) {
     <MovieList value={list}/>
   </React.StrictMode>
       </article>
+      
     </div>
   );
 };
