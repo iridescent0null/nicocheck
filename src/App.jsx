@@ -7,6 +7,8 @@ function App(props) {
   const [username,setUsername] = useState('');
   const [list,setList] = useState('');
   const [offset,setOffset] = useState(0);
+  const [existRight, setExsitRight] = useState(false);
+  const [existLeft, setExistLeft] = useState(false);
   const handleSubmit = e =>{
     e.preventDefault();
     setOffset(0)
@@ -21,11 +23,12 @@ function App(props) {
     if (username === '') {
       alert('blank search is invalid!')
       return;
-
     }
-    //setOffset(offset);
+
     fireAPI(username,offset+pageMove).then(function(value){      
-      console.log({offset:offset});
+      console.log({offset:offset,right:value.meta.totalCount-(offset+pageMove)*100});
+      setExistLeft((offset+pageMove) > 0);
+      setExsitRight((value.meta.totalCount-(offset+pageMove+1)*100) > 0);
       setList(value.data.map(item => (
         <div key={item.title}>
           <p>{item.title}</p>
@@ -42,14 +45,14 @@ function App(props) {
     search(+1);
     setOffset(offset+1);
   }
+  
   const pagingLeft = e =>{
     e.preventDefault();
     search(-1);
     setOffset(offset-1);
   }
-  let customer;
+
   async function fireAPI(keyword,page) {
-    let jsons = [];
    return await fetch('https://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search?q='+keyword+'&targets=title&_context=nicocheck&_sort=lastCommentTime&fields=title,viewCounter&_limit=100&_offset='+(page*100), {
     method: 'GET',
     headers: {
@@ -77,16 +80,12 @@ function App(props) {
         <div>
           {new Date().toLocaleString()}
         </div>
-          <input type="button" value="<" onClick={pagingLeft}/>
-          <input type="button" value=">" onClick={pagingRight}/>
-        <div>
-          {customer}
-        </div>
+          <input type="button" value="<" onClick={pagingLeft} disabled={!existLeft}/>
+          <input type="button" value=">" onClick={pagingRight} disabled={!existRight}/>
         <React.StrictMode>
-    <MovieList value={list}/>
-  </React.StrictMode>
+          <MovieList value={list}/>
+        </React.StrictMode>
       </article>
-      
     </div>
   );
 };
