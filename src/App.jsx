@@ -18,16 +18,13 @@ function App(props) {
   * @returns 
   */
   function search(pageMove){
-    
     if (username === '') {
       alert('blank search is invalid!')
       return;
 
     }
     //setOffset(offset);
-    fireAPI(username,offset+pageMove).then(function(value){
-      // to synchronize, count it up after searching
-      
+    fireAPI(username,offset+pageMove).then(function(value){      
       console.log({offset:offset});
       setList(value.data.map(item => (
         <div key={item.title}>
@@ -38,19 +35,15 @@ function App(props) {
     });
   }
 
-//   function paging(right){
-// setOffset(offset +1);
-// handleSubmit();
-//   } 
   const pagingRight = e =>{
     e.preventDefault();
-    
+    // attempts to change state to use it immediately cannot be achived,
+    // therefore change the state it after using it with manual change
     search(+1);
     setOffset(offset+1);
   }
   const pagingLeft = e =>{
     e.preventDefault();
-    
     search(-1);
     setOffset(offset-1);
   }
