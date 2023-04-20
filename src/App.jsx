@@ -1,4 +1,5 @@
 import "./App.css";
+import MovieList from './MovieList';
 import logo from "./logo.svg";
 import React, {setState,useState} from 'react';
 
@@ -10,14 +11,15 @@ function App(props) {
       username: username
     };
     alert(data.username);
-    fireAPI().then(function(value){
+    fireAPI(0).then(function(value){
       console.log(value);
     });
     
   };
   let customer;
-  async function fireAPI() {
-   return await fetch('https://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search?q=永劫譚&targets=title&_context=nicocheck&_sort=lastCommentTime', {
+  async function fireAPI(offset) {
+    let jsons = [];
+   return await fetch('https://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search?q=永劫譚&targets=title&_context=nicocheck&_sort=lastCommentTime&fields=title,viewCounter&_limit=100&_offset='+offset, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
@@ -51,6 +53,9 @@ function App(props) {
         <div>
           {customer}
         </div>
+        <React.StrictMode>
+    <MovieList value="fuga"/>
+  </React.StrictMode>
       </article>
     </div>
   );
