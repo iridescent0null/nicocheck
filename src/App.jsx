@@ -5,29 +5,36 @@ import React, {setState,useState} from 'react';
 
 function App(props) {
   const [username,setUsername] = useState('');
+  const [list,setList] = useState('');
   const handleSubmit = e =>{
     e.preventDefault();
     const data = {
       username: username
     };
-    alert(data.username);
-    fireAPI(0).then(function(value){
-      console.log(value);
+    
+    if (data.username === '') {
+      alert('blank search is invalid!')
+      return;
+
+    }
+    fireAPI(data.username,0).then(function(value){
+      setList(value.data.map(item => (
+        <div key={item.title}>
+          <p>{item.title}</p>
+          <p>再生数: {item.viewCounter}</p>
+        </div>
+      )))
     });
     
   };
   let customer;
-  async function fireAPI(offset) {
+  async function fireAPI(keyword,offset) {
     let jsons = [];
-   return await fetch('https://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search?q=永劫譚&targets=title&_context=nicocheck&_sort=lastCommentTime&fields=title,viewCounter&_limit=100&_offset='+offset, {
+   return await fetch('https://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search?q='+keyword+'&targets=title&_context=nicocheck&_sort=lastCommentTime&fields=title,viewCounter&_limit=100&_offset='+offset, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
     },
-    // body: JSON.stringify({
-    //   q: '永劫譚',
-    //   targets: 'title'
-    // })
   }).then(res => res.json());
   }
   return (
@@ -54,7 +61,7 @@ function App(props) {
           {customer}
         </div>
         <React.StrictMode>
-    <MovieList value="fuga"/>
+    <MovieList value={list}/>
   </React.StrictMode>
       </article>
     </div>
