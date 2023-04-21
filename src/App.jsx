@@ -14,6 +14,13 @@ function App(props) {
     setOffset(0)
     search(0);
   };
+
+  const handleCheck = e => {
+    e.preventDefault();
+    setOffset(0)
+    searchSeekingAllItems();
+  }
+
   /**
   * 
   * @param {*} pageMove when paging to right, should be +1. when left, -1.
@@ -45,12 +52,52 @@ function App(props) {
     search(+1);
     setOffset(offset+1);
   }
-  
+
   const pagingLeft = e =>{
     e.preventDefault();
     search(-1);
     setOffset(offset-1);
   }
+  
+  function searchSeekingAllItems(){
+    //let alreadyCollectedItems;
+    if (username === '') {
+      alert('blank search is invalid!')
+      return;
+    }
+
+    // first search
+    fireAPI(username,0).then(function(value){ 
+      if (value.meta.totalCount >1000) {
+        alert("so many hits! ("+value.meta.totalCount + ") Getting statistics only initla 1000 items");
+      }
+      const results = [];
+      results[0]=value.data;
+      let alreadyConductedCount = 1;
+      console.log(results);
+      let intervalFunction;
+
+      // while loop won't work here (using await is not valid)
+      intervalFunction = setInterval (function() { 
+      
+        if (alreadyConductedCount > value.meta.totalCount/100 
+        || alreadyConductedCount > 9) {
+          // already done 
+          clearInterval(intervalFunction);
+          return;
+        }
+
+        fireAPI(username,alreadyConductedCount).then(function(innerValue){
+          results.push(innerValue.data);
+          alreadyConductedCount += 1;
+          console.log({result:results,alreadyConductedCount:alreadyConductedCount});
+        });
+
+      },3000); // Kadokawa requires us to refrain promiscuous calls
+  
+    });
+
+  };
 
   async function fireAPI(keyword,page) {
    return await fetch('https://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search?q='+keyword+'&targets=title&_context=nicocheck&_sort=lastCommentTime&fields=title,viewCounter&_limit=100&_offset='+(page*100), {
@@ -75,7 +122,8 @@ function App(props) {
         </a>
         <form>
             <input type="text" onChange={e => setUsername(e.target.value)}/>
-            <input type="submit" value="check!" onClick={handleSubmit}/>
+            <input type="submit" value="browse!" onClick={handleSubmit}/>
+            <input type="button" value="check!" onClick={handleCheck}/>
         </form>
         <div>
           {new Date().toLocaleString()}
