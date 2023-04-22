@@ -1,4 +1,5 @@
 import "./App.css";
+import "./css/materialize.min.css";
 import MovieList from './MovieList';
 import logo from "./logo.svg";
 import React, {setState,useState} from 'react';
