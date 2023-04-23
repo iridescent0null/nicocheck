@@ -109,7 +109,7 @@ function App(props) {
   }).then(res => res.json());
   }
   return (
-    <div className="App" role="main">
+    <div className="App" role="main" class="container"> 
       <article className="App-article">
         <img src={logo} className="App-logo" alt="logo" />
         <h3>Welcome to React!</h3>
@@ -121,10 +121,12 @@ function App(props) {
         >
           Learn React
         </a>
-        <form>
-            <input type="text" onChange={e => setUsername(e.target.value)}/>
-            <input type="submit" value="browse!" onClick={handleSubmit}/>
-            <input type="button" value="check!" onClick={handleCheck}/>
+        <form class="row">
+          <div class="col s12 row">
+            <input class="col s12"  type="text" onChange={e => setUsername(e.target.value)}/>
+            <input class="btn-small col s6" type="submit" value="browse!" onClick={handleSubmit}/>
+            <input class="btn-small col s6" type="button" value="check!" onClick={handleCheck}/>
+          </div>
         </form>
         <div>
           {new Date().toLocaleString()}
